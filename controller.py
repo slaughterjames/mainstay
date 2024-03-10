@@ -12,7 +12,7 @@ import sys
 from array import *
 
 #programmer generated imports
-from logger import logger
+#from logger import logger
 
 '''
 controller
