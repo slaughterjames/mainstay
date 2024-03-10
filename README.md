@@ -6,12 +6,12 @@ All creadit goes to Daniel Miessler and his Fabric project - https://github.com/
 
 Mainstay is an implementation without the bells and whistles Fabric provides.  The patterns used there can be lifted and shifted for use as prompts for Mainstay.
 
-Python libraries you'll likely need:<br/><br/>
-markdown<br/><br/>
-markdownify<br/><br/>
-openai<br/><br/>
-termcolor<br/><br/>
-rich<br/><br/>
+Python libraries you'll likely need:<br/>
+markdown<br/>
+markdownify<br/>
+openai<br/>
+termcolor<br/>
+rich<br/>
 
 You'll need to edit the mainstay.conf file before use:<br/><br/>
 {<br/><br/>
