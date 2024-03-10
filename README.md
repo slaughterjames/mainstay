@@ -14,24 +14,23 @@ termcolor
 rich
 
 You'll need to edit the mainstay.conf file before use:
-{
-    "logger": "true",
-    "logroot": "<Your preferred output location>",
-    "promptdir": "/opt/mainstay/prompts", 
-    "defaultmodel": "gpt-4-0125-preview",
-    "apikey": "<Your OpenAI API Key>"
-}
+{\n
+    "logger": "true",\n
+    "logroot": "<Your preferred output location>",\n
+    "promptdir": "/opt/mainstay/prompts", \n
+    "defaultmodel": "gpt-4-0125-preview",\n
+    "apikey": "<Your OpenAI API Key>"\n
+}\n
 
-
-Usage: <Pipe Input for OpenAI> | OR --input [required] --prompt [optional] --model --output --listprompts --debug --help
-Example: cat text.txt | /opt/mainstay/mainstay.py --prompt summerize  --model gpt-4-0125-preview --output /your/directory --debug
-Input either pipe in or use --input - What you're to ask the AI
-Required Arguments:
---prompt - Action to be sent to OpenAI to action
-Optional Arguments:
---output - Choose where you wish the output to be directed
---listprompts - Prints a list of available prompts.
---listmodels - Prints the available LLM models to use.
---viewprompt - View the content of a specified prompt.
---debug - Prints verbose logging to the screen to troubleshoot issues with a recon installation.
+Usage: <Pipe Input for OpenAI> | OR --input [required] --prompt [optional] --model --output --listprompts --debug --help\n
+Example: cat text.txt | /opt/mainstay/mainstay.py --prompt summerize  --model gpt-4-0125-preview --output /your/directory --debug\n
+Input either pipe in or use --input - What you're to ask the AI\n
+Required Arguments:\n
+--prompt - Action to be sent to OpenAI to action\n
+Optional Arguments:\n
+--output - Choose where you wish the output to be directed\n
+--listprompts - Prints a list of available prompts.\n
+--listmodels - Prints the available LLM models to use.\n
+--viewprompt - View the content of a specified prompt.\n
+--debug - Prints verbose logging to the screen to troubleshoot issues with a recon installation.\n
 --help - You're looking at it!
