@@ -47,16 +47,19 @@ You'll need to edit the mainstay.conf file before use:<br>
     ]<br>
 }<br>
 
-Usage: <Input for OpenAI> | OR --input [required] --prompt [optional] --model --output --listprompts --debug --help
-Example: cat text.txt | /opt/mainstay/mainstay.py --prompt summerize --ai chatgpt --model gpt-4-0125-preview --output /your/directory --debug
-Input either pipe in or use --input - What you're to ask the AI
-Required Arguments:
---prompt - Action to be sent to OpenAI to action
---ai - AI to use - chatgpt or claude
-Optional Arguments:
---output - Choose where you wish the output to be directed
---listprompts - Prints a list of available prompts.
---listmodels - Prints the available LLM models to use.
---viewprompt - View the content of a specified prompt.
---debug - Prints verbose logging to the screen to troubleshoot issues with a recon installation.
---help - You're looking at it!
+Usage: <Input for OpenAI> | OR --input [required] --prompt [optional] --model --output --listprompts --debug --help<br>
+Example: cat text.txt | /opt/mainstay/mainstay.py --prompt summerize --ai chatgpt --model gpt-4-0125-preview --output /your/directory --debug<br>
+Input either pipe in or use --input - What you're to ask the AI<br>
+Required Arguments:<br>
+--prompt - Action to be sent to OpenAI to action<br>
+--ai - AI to use - chatgpt or claude<br>
+Optional Arguments:<br>
+--output - Choose where you wish the output to be directed<br>
+--listprompts - Prints a list of available prompts.<br>
+--listmodels - Prints the available LLM models to use.<br>
+--viewprompt - View the content of a specified prompt.<br>
+--debug - Prints verbose logging to the screen to troubleshoot issues with a recon installation.<br>
+--help - You're looking at it!<br>
+
+Changelog for 0.2:<br>
+Added support for Anthropic's Claude3
