@@ -1,51 +1,51 @@
 mainstay
 
-Framework to easily query the OpenAI API using pre-constructed, thorough prompting.
+Framework to easily query the OpenAI API using pre-constructed, thorough prompting.<br>
 
-All creadit goes to Daniel Miessler and his Fabric project - https://github.com/danielmiessler
+All creadit goes to Daniel Miessler and his Fabric project - https://github.com/danielmiessler<br>
 
-Mainstay is an implementation without the bells and whistles Fabric provides. The patterns used there can be lifted and shifted for use as prompts for Mainstay.
+Mainstay is an implementation without the bells and whistles Fabric provides. The patterns used there can be lifted and shifted for use as prompts for Mainstay.<br>
 
-Python libraries you'll likely need:
-markdown
-markdownify
-openai
-anthropic
-termcolor
-rich
+Python libraries you'll likely need:<br>
+markdown<br>
+markdownify<br>
+openai<br>
+anthropic<br>
+termcolor<br>
+rich<br>
 
-It's hardcoded to be dropped into /opt/mainstay/ although you could change this by editing mainstay.py here:
-    try:
-        #Conf file hardcoded here
-        with open('/opt/mainstay/mainstay.conf', 'r') as read_file:
-            data = json.load(read_file)
-    except Exception as e:
-        print (colored('[x] Unable to read configuration file: ' + str(e), 'red', attrs=['bold']))
-        return -1
+It's hardcoded to be dropped into /opt/mainstay/ although you could change this by editing mainstay.py here:<br>
+    try:<br>
+        #Conf file hardcoded here<br>
+        with open('/opt/mainstay/mainstay.conf', 'r') as read_file:<br>
+            data = json.load(read_file)<br>
+    except Exception as e:<br>
+        print (colored('[x] Unable to read configuration file: ' + str(e), 'red', attrs=['bold']))<br>
+        return -1<br>
 
-You'll need to edit the mainstay.conf file before use:
-{
-    "logger": "true",
-    "logroot": "",
-    "promptdir": "/opt/mainstay/prompts",
-    "defaultai": "chatgpt", 
-    "defaultmodels": [
-        {
-            "openai": "gpt-4-0125-preview"
-        },
-        {
-            "anthropic": "claude-3-haiku-20240307"
-        }
-    ],
-    "apikeys": [
-        {
-            "openai": ""
-        },
-        {
-            "anthropic": ""
-        }
-    ]
-}
+You'll need to edit the mainstay.conf file before use:<br>
+{<br>
+    "logger": "true",<br>
+    "logroot": "",<br>
+    "promptdir": "/opt/mainstay/prompts",<br>
+    "defaultai": "chatgpt", <br>
+    "defaultmodels": [<br>
+        {<br>
+            "openai": "gpt-4-0125-preview"<br>
+        },<br>
+        {<br>
+            "anthropic": "claude-3-haiku-20240307"<br>
+        }<br>
+    ],<br>
+    "apikeys": [<br>
+        {<br>
+            "openai": ""<br>
+        },<br>
+        {<br>
+            "anthropic": ""<br>
+        }<br>
+    ]<br>
+}<br>
 
 Usage: <Input for OpenAI> | OR --input [required] --prompt [optional] --model --output --listprompts --debug --help
 Example: cat text.txt | /opt/mainstay/mainstay.py --prompt summerize --ai chatgpt --model gpt-4-0125-preview --output /your/directory --debug
