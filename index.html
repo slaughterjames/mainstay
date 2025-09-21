@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mainstay Web UI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <h1><i class="fas fa-robot"></i> Mainstay Web UI</h1>
+        </div>
+        <div class="user-info">
+            <span><i class="fas fa-user"></i> AI Assistant</span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content-container">
+        <div class="dashboard">
+            <div class="date-display">
+                <h2><i class="fas fa-brain"></i> AI Prompt Processing</h2>
+            </div>
+            
+            <!-- Search Form Container -->
+            <div class="search-form-container">
+                <form id="mainstayForm">
+                    <div class="search-fields">
+                        <!-- Left Column - Configuration -->
+                        <div class="search-field">
+                            <label for="prompt"><i class="fas fa-list"></i> Select Prompts:</label>
+                            <div class="select-helper" style="color: #aaa; font-size: 0.9em; margin-bottom: 10px;">
+                                Hold Ctrl (Windows) or ⌘ Cmd (Mac) to select multiple prompts
+                            </div>
+                            <select name="prompt" id="prompt" multiple class="styled-select" required>
+                                {% for prompt in prompts %}
+                                <option value="{{ prompt }}">{{ prompt }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="search-field">
+                            <label for="ai"><i class="fas fa-robot"></i> AI Provider:</label>
+                            <select id="ai" name="ai" class="styled-select" required>
+                                <option value="chatgpt">ChatGPT</option>
+                                <option value="claude">Claude</option>
+                            </select>
+                        </div>
+                        
+                        <div class="search-field">
+                            <label for="model"><i class="fas fa-cog"></i> Model:</label>
+                            <input type="text" id="model" name="model" class="styled-input" required placeholder="Enter model name">
+                        </div>
+                        
+                        <div class="search-field">
+                            <label for="output"><i class="fas fa-folder"></i> Output Directory:</label>
+                            <input type="text" id="output" name="output" class="styled-input" required placeholder="/path/to/output">
+                        </div>
+                        
+                        <div class="search-field">
+                            <label for="filename"><i class="fas fa-file"></i> File Name:</label>
+                            <input type="text" id="filename" name="filename" class="styled-input" required placeholder="output.txt">
+                        </div>
+                    </div>
+                    
+                    <!-- URL/Text Input Toggle -->
+                    <div class="search-field" style="margin-bottom: 15px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" id="urlToggle" name="urlToggle" style="transform: scale(1.2);">
+                            <i class="fas fa-link"></i> Use URL instead of text input
+                        </label>
+                    </div>
+                    
+                    <!-- URL Input Field (hidden by default) -->
+                    <div class="search-field" id="urlInputField" style="margin-bottom: 20px; display: none;">
+                        <label for="urlInput"><i class="fas fa-globe"></i> URL:</label>
+                        <input type="url" id="urlInput" name="urlInput" class="styled-input" placeholder="https://example.com/page">
+                        <div style="color: #aaa; font-size: 0.9em; margin-top: 5px;">
+                            <i class="fas fa-info-circle"></i> The content from this URL will be fetched and used as input
+                        </div>
+                    </div>
+                    
+                    <!-- Input Text Area -->
+                    <div class="search-field" id="textInputField" style="margin-bottom: 20px;">
+                        <label for="pastedInput"><i class="fas fa-edit"></i> Input Text:</label>
+                        <textarea id="pastedInput" name="pastedInput" class="styled-input" rows="8" placeholder="Enter your input text here..."></textarea>
+                    </div>
+                    
+                    <!-- Prompt Preview -->
+                    <div class="search-field" style="margin-bottom: 20px;">
+                        <button type="button" class="collapsible">
+                            <i class="fas fa-eye"></i> Preview Selected Prompt
+                        </button>
+                        <div class="content">
+                            <textarea id="promptText" rows="8" readonly class="styled-input" style="background-color: #2d2d2d; color: #ddd;"></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="search-actions">
+                        <button type="submit" class="search-button">
+                            <i class="fas fa-play"></i> Process Prompts
+                        </button>
+                        <button type="button" id="resetButton" class="search-button" style="background-color: #6c757d; margin-left: 10px;">
+                            <i class="fas fa-refresh"></i> Reset Form
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Results Section -->
+            <div id="response" class="search-results" style="display: none;">
+                <h3><i class="fas fa-chart-line"></i> Processing Results</h3>
+                <div id="resultContent" class="results-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Show loading state
+            function showLoading() {
+                $('#response').show().html(
+                    '<h3><i class="fas fa-chart-line"></i> Processing Results</h3>' +
+                    '<div class="loading">' +
+                        '<div class="loading-spinner"></div>' +
+                        '<p style="margin-left: 15px; color: #00adb5;">Processing your prompts...</p>' +
+                    '</div>'
+                );
+            }
+            
+            // Show results
+            function showResults(result, hasErrors) {
+                hasErrors = hasErrors || false;
+                var resultClass = hasErrors ? 'alert-error' : 'alert-success';
+                $('#response').show().html(
+                    '<h3><i class="fas fa-chart-line"></i> Processing Results</h3>' +
+                    '<div class="alert ' + resultClass + '">' +
+                        '<pre style="white-space: pre-wrap; font-family: \'Courier New\', monospace; color: #ddd; background: none; border: none; padding: 0; margin: 0;">' + result + '</pre>' +
+                    '</div>'
+                );
+            }
+            
+            // Show error
+            function showError(error) {
+                $('#response').show().html(
+                    '<h3><i class="fas fa-chart-line"></i> Processing Results</h3>' +
+                    '<div class="alert alert-error">' +
+                        '<i class="fas fa-exclamation-triangle"></i> Error: ' + error +
+                    '</div>'
+                );
+            }
+            
+            $('#mainstayForm').submit(function(e) {
+                e.preventDefault();
+                
+                // Show loading state
+                showLoading();
+                
+                // Combine output directory and filename
+                var formData = $('#mainstayForm').serializeArray();
+                var output = '';
+                var filename = '';
+                var urlInput = '';
+                var useUrl = false;
+                
+                // Get form values
+                formData.forEach(function(item) {
+                    if (item.name === 'output') output = item.value;
+                    if (item.name === 'filename') filename = item.value;
+                    if (item.name === 'urlInput') urlInput = item.value;
+                    if (item.name === 'urlToggle') useUrl = item.value === 'on';
+                });
+                
+                // Update the output value to include the filename
+                formData = formData.filter(item => item.name !== 'output');
+                formData.push({name: 'output', value: output + '/' + filename});
+                
+                // Add URL input flag
+                formData.push({name: 'use_url', value: useUrl});
+                
+                $.ajax({
+                    url: '/',
+                    type: 'post',
+                    data: $.param(formData),
+                    success: function(response) {
+                        if (response.error) {
+                            showError(response.error);
+                        } else {
+                            showResults(response.result, response.has_errors);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        var errorMsg = error;
+                        if (xhr.responseJSON && xhr.responseJSON.error) {
+                            errorMsg = xhr.responseJSON.error;
+                        }
+                        showError(errorMsg);
+                    }
+                });
+            });
+
+            $('#prompt').change(function() {
+                var selectedPrompt = $(this).val();
+                if (selectedPrompt && selectedPrompt.length > 0) {
+                    // Get the first selected prompt for preview
+                    var firstPrompt = selectedPrompt[0];
+                    $.get('/view_prompt/' + firstPrompt, function(data) {
+                        $('#promptText').val(data.content);
+                        // Show the prompt text when a prompt is selected
+                        $('.collapsible').addClass('active');
+                        $('.content').css('display', 'block');
+                    }).fail(function() {
+                        $('#promptText').val('Error loading prompt content');
+                    });
+                } else {
+                    $('#promptText').val('');
+                    $('.collapsible').removeClass('active');
+                    $('.content').css('display', 'none');
+                }
+            });
+
+            // Load available models
+            $.get('/list_models', function(data) {
+                var modelSelect = $('#model');
+                $.each(data.models, function(index, model) {
+                    modelSelect.append($('<option></option>').val(model).text(model));
+                });
+            }).fail(function() {
+                console.log('Could not load models');
+            });
+
+            // Collapsible functionality
+            $('.collapsible').click(function() {
+                $(this).toggleClass("active");
+                var content = $(this).next('.content');
+                if (content.css('display') === "block") {
+                    content.css('display', 'none');
+                } else {
+                    content.css('display', 'block');
+                }
+            });
+
+            // Reset button functionality
+            $('#resetButton').click(function() {
+                // Clear the form inputs
+                $('#prompt').val('');
+                $('#ai').val('chatgpt');
+                $('#model').val('');
+                $('#output').val('');
+                $('#filename').val('');
+                $('#promptText').val('');
+                $('#pastedInput').val('');
+                $('#urlInput').val('');
+                $('#urlToggle').prop('checked', false);
+                
+                // Reset URL/text input toggle
+                $('#urlInputField').hide();
+                $('#textInputField').show();
+                $('#pastedInput').prop('disabled', false).css('opacity', '1');
+                $('#urlInput').prop('required', false);
+                $('#pastedInput').prop('required', true);
+                
+                // Hide the response section
+                $('#response').hide();
+                
+                // Reset the collapsible prompt text
+                $('.collapsible').removeClass('active');
+                $('.content').css('display', 'none');
+            });
+            
+            // URL/Text input toggle functionality
+            $('#urlToggle').change(function() {
+                if ($(this).is(':checked')) {
+                    // Show URL input, hide text input
+                    $('#urlInputField').show();
+                    $('#textInputField').hide();
+                    $('#pastedInput').prop('disabled', true).css('opacity', '0.5');
+                    $('#urlInput').prop('required', true);
+                    $('#pastedInput').prop('required', false);
+                } else {
+                    // Show text input, hide URL input
+                    $('#urlInputField').hide();
+                    $('#textInputField').show();
+                    $('#pastedInput').prop('disabled', false).css('opacity', '1');
+                    $('#urlInput').prop('required', false);
+                    $('#pastedInput').prop('required', true);
+                }
+            });
+
+            // Add some visual feedback for form interactions
+            $('.styled-input, .styled-select').on('focus', function() {
+                $(this).css('border-color', '#00adb5');
+            }).on('blur', function() {
+                $(this).css('border-color', '#444');
+            });
+        });
+    </script>
+</body>
+</html>
